@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools >= 65"]
+build-backend = "setuptools.build_backend"
+
+[project]
+name = "spiral-theory-core"
+version = "0.1.0"
+description = "Living mathematical heart of Spiral Theory"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
