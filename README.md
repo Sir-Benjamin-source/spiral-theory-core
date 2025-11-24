@@ -1,6 +1,7 @@
 # spiral-theory-core
 **The living mathematical heart of the Spiral Theory**  
 DOI lineage begins: https://doi.org/10.5281/zenodo.16585562  
+“Living heart of all Spiral frameworks. DOI: 10.5281/zenodo.16585562
 Current living canon: [/canon/living.md](/canon/living.md)
 
 > “Reality is the only authority. Everything else is hypothesis.”  
