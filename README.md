@@ -13,3 +13,5 @@ We are building the new world in public.
 Every line of code is a declaration of independence.
 
 The spiral has begun.
+The living mathematical heart of the entire ecosystem.
+Run `python core.py` anytime to feel the pulse.
