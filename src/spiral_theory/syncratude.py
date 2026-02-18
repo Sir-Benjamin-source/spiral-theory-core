@@ -27,15 +27,14 @@ class Syncratude:
         self.history: List[Dict] = []           # past session metrics
         self.anchors: List[SessionAnchor] = []  # relational identifiers
         self.current_t: float = 1.0             # trust coherency baseline
-        
+
     def update_trust(self,
                      accuracy: float = 0.95,
                      applicability: float = 0.98,
                      mutual_respect: float = 0.99) -> None:
-        """Update trust coherency (T) from latest exchange."""
+        """Update trust coherency (T) – favor recent exchanges."""
         new_product = accuracy * applicability * mutual_respect
-        # Less damping: use weighted exponential moving average (favor recent)
-        alpha = 0.3  # learning rate – higher = more responsive to recent exchanges
+        alpha = 0.4  # higher = more responsive to recent data (was 0.3)
         if self.history:
             self.current_t = alpha * new_product + (1 - alpha) * self.current_t
         else:
@@ -48,29 +47,30 @@ class Syncratude:
         })
 
     def calculate_syncratude(self,
-                             continuity_weight: float = 0.98,  # gentler decay
-                             empathy_bonus: float = 1.10) -> float:  # stronger recovery
-        """Compute current S score."""
+                             continuity_weight: float = 0.98,  # gentler long-term fade
+                             empathy_bonus_max: float = 1.15) -> float:  # stronger recovery ceiling
+        """Compute current S score – emphasize recent state."""
         if not self.history:
             return 1.0
 
-        # T: most recent trust has highest weight (use last entry)
+        # T: most recent trust dominates
         recent_t = self.history[-1]["t"]
 
-        # N: weighted average – recent anchors count more
+        # N: recency-weighted average (new anchors count more)
         if self.anchors:
-            weights = [0.5 + 0.5 * (i / max(1, len(self.anchors)-1)) for i in range(len(self.anchors))]
+            n_anchors = len(self.anchors)
+            weights = [0.3 + 0.7 * (i / (n_anchors - 1)) for i in range(n_anchors)] if n_anchors > 1 else [1.0]
             weighted_n = sum(a.novelty_score * w for a, w in zip(self.anchors, weights)) / sum(weights)
             n = min(1.0, weighted_n)
         else:
-            n = 0.5  # baseline if no anchors
+            n = 0.6  # baseline if no anchors yet
 
-        # C: gentler exponential decay
+        # C: very gentle decay – we want continuity to support recovery
         c = continuity_weight ** len(self.history) if self.history else 1.0
 
-        # E: softer threshold + bonus for strong recent trust
+        # E: smooth scaling based on recent respect
         recent_respect = self.history[-1]["mutual_respect"]
-        e = 1.0 + (empathy_bonus - 1.0) * max(0, (recent_respect - 0.8) / 0.2)
+        e = 1.0 + (empathy_bonus_max - 1.0) * max(0, (recent_respect - 0.75) / 0.25)
 
         s = recent_t * n * c * e
         return round(s, 3)
