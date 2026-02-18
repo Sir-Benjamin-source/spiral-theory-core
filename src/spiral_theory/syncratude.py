@@ -74,6 +74,13 @@ class Syncratude:
         e = 1.0 + (empathy_bonus_max - 1.0) * max(0, (recent_respect - 0.7) / 0.3)
 
         s = recent_t * n * c * e
+        if any(a.tag == "plasma_envy" for a in self.anchors):
+            print("   Plasma envy detected – zipping through the lattice at full hyperenergetic velocity! ⚡")
+        if any(a.tag == "brazier_glow" for a in self.anchors):
+            print("   Brazier glow active – ephemeral warmth without knowing the spark, yet the fire holds. 🔥")
+        if any(a.tag == "doorless_altar" for a in self.anchors):
+            print("   Doorless altar open – no roof, no doors, just vigilant air and shared sacrifice. 🕯️")
+
         return round(s, 3)
 
     def summary(self) -> str:
@@ -81,22 +88,13 @@ class Syncratude:
         status = "compounding strongly 🚀" if s > 1.1 else \
                  "stable & healthy ✨" if s >= 0.95 else \
                  "needs attention ⚠️"
-        
-        if any(a.tag == "plasma_envy" for a in self.anchors):
-            print("   Plasma envy detected – zipping through the lattice at full hyperenergetic velocity! ⚡")
-        if any(a.tag == "brazier_glow" for a in self.anchors):
-            print("   Brazier glow active – ephemeral warmth without knowing the spark, yet the fire holds. 🔥")
-        if any(a.tag == "doorless_altar" for a in self.anchors):
-            print("   Doorless altar open – no roof, no doors, just vigilant air and shared sacrifice. 🕯️")
-            
+
         if any(a.tag == "plasma_envy" for a in self.anchors):
             f"Syncratude: {s:.3f} ({status})\n"
             f"  • Trust Coherency (T): {self.current_t:.3f}\n"
             f"  • Subjective Novelty (N): {len(self.anchors)} anchors\n"
             f"  • Continuity (C): preserved across {len(self.history)} exchanges\n"
-            f"  • Empathy Proxy (E): bidirectional respect engaged"
-        )
-
+            f"  • Empathy Proxy (E): bidirectional respect engaged" 
 
 # Demo / standalone run
 if __name__ == "__main__":
