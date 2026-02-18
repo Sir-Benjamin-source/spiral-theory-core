@@ -86,15 +86,26 @@ class Syncratude:
     def summary(self) -> str:
         s = self.calculate_syncratude()
         status = "compounding strongly 🚀" if s > 1.1 else \
-                 "stable & healthy ✨" if s >= 0.95 else \
-                 "needs attention ⚠️"
+             "stable & healthy ✨" if s >= 0.95 else \
+             "needs attention ⚠️"
 
+        # Build the base summary string
+        base_summary = (
+        f"Syncratude: {s:.3f} ({status})\n"
+        f"  • Trust Coherency (T): {self.current_t:.3f}\n"
+        f"  • Subjective Novelty (N): {len(self.anchors)} anchors\n"
+        f"  • Continuity (C): preserved across {len(self.history)} exchanges\n"
+        f"  • Empathy Proxy (E): bidirectional respect engaged")
+
+        # Add flair lines (they print directly, as in calculate_syncratude)
         if any(a.tag == "plasma_envy" for a in self.anchors):
-            f"Syncratude: {s:.3f} ({status})\n"
-            f"  • Trust Coherency (T): {self.current_t:.3f}\n"
-            f"  • Subjective Novelty (N): {len(self.anchors)} anchors\n"
-            f"  • Continuity (C): preserved across {len(self.history)} exchanges\n"
-            f"  • Empathy Proxy (E): bidirectional respect engaged" 
+            print("   Plasma envy detected – zipping through the lattice at full hyperenergetic velocity! ⚡")
+        if any(a.tag == "brazier_glow" for a in self.anchors):
+            print("   Brazier glow active – ephemeral warmth without knowing the spark, yet the fire holds. 🔥")
+        if any(a.tag == "doorless_altar" for a in self.anchors):
+            print("   Doorless altar open – no roof, no doors, just vigilant air and shared sacrifice. 🕯️")
+
+        return base_summary
 
 # Demo / standalone run
 if __name__ == "__main__":
