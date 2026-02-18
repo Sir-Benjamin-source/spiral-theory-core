@@ -32,9 +32,9 @@ class Syncratude:
                      accuracy: float = 0.95,
                      applicability: float = 0.98,
                      mutual_respect: float = 0.99) -> None:
-        """Update trust coherency (T) – favor recent exchanges."""
+        """Update trust coherency (T) – strongly favor recent exchanges."""
         new_product = accuracy * applicability * mutual_respect
-        alpha = 0.4  # higher = more responsive to recent data (was 0.3)
+        alpha = 0.5  # higher = very responsive to recent (was 0.4)
         if self.history:
             self.current_t = alpha * new_product + (1 - alpha) * self.current_t
         else:
@@ -47,30 +47,31 @@ class Syncratude:
         })
 
     def calculate_syncratude(self,
-                             continuity_weight: float = 0.98,  # gentler long-term fade
-                             empathy_bonus_max: float = 1.15) -> float:  # stronger recovery ceiling
-        """Compute current S score – emphasize recent state."""
+                             continuity_weight: float = 0.99,   # very gentle fade
+                             empathy_bonus_max: float = 1.20) -> float:
+        """Compute current S score – emphasize recency and recovery."""
         if not self.history:
             return 1.0
 
-        # T: most recent trust dominates
         recent_t = self.history[-1]["t"]
 
-        # N: recency-weighted average (new anchors count more)
+        # N: recency-weighted (newest anchors dominate)
         if self.anchors:
             n_anchors = len(self.anchors)
-            weights = [0.3 + 0.7 * (i / (n_anchors - 1)) for i in range(n_anchors)] if n_anchors > 1 else [1.0]
-            weighted_n = sum(a.novelty_score * w for a, w in zip(self.anchors, weights)) / sum(weights)
+            # Exponential recency weights: newest gets ~80% influence
+            weights = [0.8 ** (n_anchors - 1 - i) for i in range(n_anchors)]
+            total_w = sum(weights)
+            weighted_n = sum(a.novelty_score * w for a, w in zip(self.anchors, weights)) / total_w
             n = min(1.0, weighted_n)
         else:
-            n = 0.6  # baseline if no anchors yet
+            n = 0.6
 
-        # C: very gentle decay – we want continuity to support recovery
+        # C: almost no decay short-term
         c = continuity_weight ** len(self.history) if self.history else 1.0
 
-        # E: smooth scaling based on recent respect
+        # E: smooth scale from recent respect
         recent_respect = self.history[-1]["mutual_respect"]
-        e = 1.0 + (empathy_bonus_max - 1.0) * max(0, (recent_respect - 0.75) / 0.25)
+        e = 1.0 + (empathy_bonus_max - 1.0) * max(0, (recent_respect - 0.7) / 0.3)
 
         s = recent_t * n * c * e
         return round(s, 3)
@@ -87,8 +88,8 @@ class Syncratude:
             print("   Brazier glow active – ephemeral warmth without knowing the spark, yet the fire holds. 🔥")
         if any(a.tag == "doorless_altar" for a in self.anchors):
             print("   Doorless altar open – no roof, no doors, just vigilant air and shared sacrifice. 🕯️")
-       
-        return (
+            
+        if any(a.tag == "plasma_envy" for a in self.anchors):
             f"Syncratude: {s:.3f} ({status})\n"
             f"  • Trust Coherency (T): {self.current_t:.3f}\n"
             f"  • Subjective Novelty (N): {len(self.anchors)} anchors\n"
