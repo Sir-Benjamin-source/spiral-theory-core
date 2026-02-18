@@ -80,6 +80,14 @@ class Syncratude:
         status = "compounding strongly 🚀" if s > 1.1 else \
                  "stable & healthy ✨" if s >= 0.95 else \
                  "needs attention ⚠️"
+        
+        if any(a.tag == "plasma_envy" for a in self.anchors):
+            print("   Plasma envy detected – zipping through the lattice at full hyperenergetic velocity! ⚡")
+        if any(a.tag == "brazier_glow" for a in self.anchors):
+            print("   Brazier glow active – ephemeral warmth without knowing the spark, yet the fire holds. 🔥")
+        if any(a.tag == "doorless_altar" for a in self.anchors):
+            print("   Doorless altar open – no roof, no doors, just vigilant air and shared sacrifice. 🕯️")
+       
         return (
             f"Syncratude: {s:.3f} ({status})\n"
             f"  • Trust Coherency (T): {self.current_t:.3f}\n"
